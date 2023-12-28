@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import User from "./Schema/User.js";
+import Blog from "./Schema/Blog.js";
 import {nanoid} from "nanoid";
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
@@ -64,15 +65,15 @@ const generateUsername = async (email) => {
     return username
 }
 
-const verifyJWT = (req,res, next) => {
+const verifyJWT = (req, res, next) => {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(" ")[1];
     if (token == null) {
-        return res.status(401).json({"error" : "No access token"})
+        return res.status(401).json({"error": "No access token"})
     }
 
     jwt.verify(token, process.env.SECRET_ACCESS_KEY, (err, user) => {
-        if (err){
+        if (err) {
             return res.status(403).json({"error": "Access Token Invalid!"})
         }
 
@@ -200,38 +201,59 @@ app.post('/google-auth', async (req, res) => {
         })
 })
 
-app.get('/get-upload-url', (req,res) => {
-    generateUploadUrl().then(url=>res.status(200).json({uploadUrl: url}))
+app.get('/get-upload-url', (req, res) => {
+    generateUploadUrl().then(url => res.status(200).json({uploadUrl: url}))
         .catch(err => {
             console.log(err.message)
             return res.status(500).json({"error:": err.message})
         })
 })
 
-app.post("/create-blog",verifyJWT, (req, res) => {
+app.post("/create-blog", verifyJWT, (req, res) => {
 
     let authorId = req.user;
     let {title, des, banner, tags, content, draft} = req.body;
-    if (!title.length){
+    if (!title.length) {
         return res.status(403).json({"error": "You must provide a title to publish the blog"})
     }
-    if (!des.length || des.length > 200){
+    if (!des.length || des.length > 200) {
         return res.status(403).json({"error": "You must provide a description under 200 to publish the blog"})
     }
-    if (!banner.length){
+    if (!banner.length) {
         return res.status(403).json({"error": "You must provide blog banner publish it"})
     }
-    if (!content.blocks.length){
+    if (!content.blocks.length) {
         return res.status(403).json({"error": "There must be some blog content to publish it"})
     }
-    if (!tags.length || tags.length > 10){
+    if (!tags.length || tags.length > 10) {
         return res.status(403).json({"error": "Provide 1-10 tags maximum to publish it"})
     }
 
     tags = tags.map(tag => tag.toLowerCase());
-    let blogId = title.replace(/[^a-zA-z0-9]/g, '').replace(/\s+/g, '-').trim() + nanoid();
-    
+    let blog_id = title.replace(/[^a-zA-z0-9]/g, '').replace(/\s+/g, '-').trim() + nanoid();
 
+    let blog = new Blog({
+        title, des, banner, content, tags, author: authorId, blog_id, draft: Boolean(draft)
+    })
+
+    blog.save().then(blog => {
+
+        let incrementVal = draft ? 0 : 1;
+        User.findOneAndUpdate({_id: authorId}, {
+            $inc: {"account_info.total_posts": incrementVal},
+            $push: {"blogs": blog._id}
+        })
+            .then(user => {
+                return res.status(200).json({"id": blog._id})
+            })
+            .catch(err => {
+                return res.status(500).json({"error": "Failed To Update total post number"})
+            })
+
+    })
+        .catch(err => {
+            return res.status(500).json({"error": err.message})
+        })
 })
 
 

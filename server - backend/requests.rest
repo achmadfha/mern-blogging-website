@@ -1,0 +1,23 @@
+#POST http://localhost:3000/signup
+#Content-Type: application/json
+#
+#{
+#  "fullname": "Jhon Doe",
+#  "email": "jhonDhoe@gmail.com",
+#  "password": "BauMemek123!"
+#}
+
+###
+POST http://localhost:3000/create-blog
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1OGMxYWMwZDE5NjQ5YjRmZjNlYzI0MyIsImlhdCI6MTcwMzY4MDcwNH0.IATwZwJkKBabw9B_dCBMOgo062zqkmsHsB-h8sHZMN4
+
+{
+  "title" : "Test Title 2",
+  "banner": "https://example.com/image.jpeg",
+  "des": "This is short description",
+  "content": {
+    "blocks": [1,2,3]
+  },
+  "tags": ["tags 1", "tags 3"]
+}
