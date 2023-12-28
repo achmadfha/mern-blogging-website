@@ -213,20 +213,24 @@ app.post("/create-blog", verifyJWT, (req, res) => {
 
     let authorId = req.user;
     let {title, des, banner, tags, content, draft} = req.body;
+
     if (!title.length) {
-        return res.status(403).json({"error": "You must provide a title to publish the blog"})
+        return res.status(403).json({"error": "You must provide a title"})
     }
-    if (!des.length || des.length > 200) {
-        return res.status(403).json({"error": "You must provide a description under 200 to publish the blog"})
-    }
-    if (!banner.length) {
-        return res.status(403).json({"error": "You must provide blog banner publish it"})
-    }
-    if (!content.blocks.length) {
-        return res.status(403).json({"error": "There must be some blog content to publish it"})
-    }
-    if (!tags.length || tags.length > 10) {
-        return res.status(403).json({"error": "Provide 1-10 tags maximum to publish it"})
+
+    if (!draft){
+        if (!des.length || des.length > 200) {
+            return res.status(403).json({"error": "You must provide a description under 200 to publish the blog"})
+        }
+        if (!banner.length) {
+            return res.status(403).json({"error": "You must provide blog banner publish it"})
+        }
+        if (!content.blocks.length) {
+            return res.status(403).json({"error": "There must be some blog content to publish it"})
+        }
+        if (!tags.length || tags.length > 10) {
+            return res.status(403).json({"error": "Provide 1-10 tags maximum to publish it"})
+        }
     }
 
     tags = tags.map(tag => tag.toLowerCase());
