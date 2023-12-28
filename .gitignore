@@ -1,5 +1,5 @@
 .idea
 .env
 node_modules
-server/requests.rest
+server - backend/requests.rest
 server - backend/blogs-react-js-firebase-adminsdk-50fac-717d754467.json
