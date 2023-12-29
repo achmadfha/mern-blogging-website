@@ -218,7 +218,7 @@ app.post("/create-blog", verifyJWT, (req, res) => {
         return res.status(403).json({"error": "You must provide a title"})
     }
 
-    if (!draft){
+    if (!draft) {
         if (!des.length || des.length > 200) {
             return res.status(403).json({"error": "You must provide a description under 200 to publish the blog"})
         }
@@ -260,6 +260,39 @@ app.post("/create-blog", verifyJWT, (req, res) => {
         })
 })
 
+app.get('/latest-blog', (req, res) => {
+
+    let maxLimit = 5;
+
+    Blog.find({draft: false})
+        .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+        .sort({"publishedAt": -1})
+        .select("blog_id title des banner activity tags publishedAt -_id")
+        .limit(maxLimit)
+        .then(blogs => {
+            return res.status(200).json({blogs})
+        })
+        .catch(err => {
+            return res.status(500).json({"error": err.message})
+        })
+
+})
+
+app.get('/trending-blog', (req,res) => {
+
+    Blog.find({draft: false})
+        .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+        .sort({"activity.total_read" : -1, "activity.total_likes": -1, "publishedAt": -1})
+        .select("blog_id title publishAt -_id")
+        .limit(5)
+        .then(blogs => {
+            return res.status(200).json({blogs})
+        })
+        .catch(err => {
+            return res.status(500).json({"error" : err.message})
+        })
+
+})
 
 /* monggose db setup */
 const PORT = process.env.PORT || 8001;
