@@ -22,7 +22,7 @@ const SearchPage = () => {
                     state: blogs,
                     data: data.blogs,
                     page,
-                    countRoute: "/all-latest-blogs-count",
+                    countRoute: "/search-blogs-count",
                     data_to_send: {query},
                     create_new_arr
                 });
@@ -51,11 +51,27 @@ const SearchPage = () => {
         fetchUsers(null);
     }
 
+    const UserCardWraper = () => {
+        return (
+            <>
+                {
+                    users === null ? <Loader /> :
+                        users.length ?
+                            users.maps((user, i) => {
+                                return user
+                            })
+                            : <NoDataMessage message="No User Found" />
+                }
+            </>
+        )
+    }
+
     return (
         <section className="h-cover flex justify-center gap-10">
             <div className="w-full">
                 <InPageNavigation route={[`Search result for ${query}`, "Accounts Matched"]}
                                   defaultHidden={["Accounts Matched"]}>
+
                     <>
                         {
                             blogs === null ? (<Loader/>) : (
@@ -73,6 +89,9 @@ const SearchPage = () => {
                         }
                         <LoadMoreDataBtn state={blogs} fetchDatafun={searchBlogs}/>
                     </>
+
+                    <UserCardWraper />
+
                 </InPageNavigation>
             </div>
         </section>

@@ -335,7 +335,7 @@ app.post('/all-latest-blogs-count', (req, res) => {
 
 })
 
-app.post('/search-blog-blogs-count', (req, res) => {
+app.post('/search-blogs-count', (req, res) => {
 
     let {tag, query} = req.body;
 

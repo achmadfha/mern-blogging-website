@@ -61,7 +61,7 @@ const HomePage = () => {
                     state: blogs,
                     data: data.blogs,
                     page,
-                    countRoute: "/search-blog-blogs-count",
+                    countRoute: "/search-blogs-count",
                     data_to_send: {tag: pageState}
                 })
 
