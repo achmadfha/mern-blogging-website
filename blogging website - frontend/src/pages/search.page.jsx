@@ -8,6 +8,7 @@ import LoadMoreDataBtn from "../components/load-more.component.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {FilterPaginationData} from "../common/filter-pagination-data.jsx";
+import UserCard from "../components/usercard.component.jsx";
 
 const SearchPage = () => {
 
@@ -57,8 +58,10 @@ const SearchPage = () => {
                 {
                     users === null ? <Loader /> :
                         users.length ?
-                            users.maps((user, i) => {
-                                return user
+                            users.map((user, i) => {
+                                return <AnimationWrapper key={i} transition={{duration: 1, delay: i*0.88 }}>
+                                    <UserCard user={user}/>
+                                </AnimationWrapper>
                             })
                             : <NoDataMessage message="No User Found" />
                 }
@@ -94,6 +97,13 @@ const SearchPage = () => {
 
                 </InPageNavigation>
             </div>
+
+            <div className="min-w-[40%] lg:min-w[350px] max-w-min border-1 border-grey pl-8 pt-3 max-md:hidden">
+                <h1 className="font-medium text-xl mb-8">User related to search <i className="fi fi-rr-user mt-1"></i></h1>
+
+                <UserCardWraper />
+            </div>
+
         </section>
     )
 }
